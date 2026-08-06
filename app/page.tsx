@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowRight, MailCheck } from 'lucide-react';
 import Button from '@/components/ui/Button';
@@ -9,9 +10,23 @@ import Logo from '@/components/ui/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageInner />
+    </Suspense>
+  );
+}
+
+function LoginPageInner() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const { signIn, loading, linkSent } = useAuth();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const authError = searchParams.get('auth_error');
+    if (authError) setError(authError);
+  }, [searchParams]);
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
