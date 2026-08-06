@@ -103,11 +103,11 @@ export default function LoginPage() {
               <input
                 required
                 inputMode="numeric"
-                maxLength={6}
+                maxLength={10}
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                placeholder="123456"
-                className="w-full rounded-full border border-navy-900/15 bg-ivory-50/60 px-5 py-3.5 text-center font-mono text-lg tracking-[0.3em] text-navy-900 outline-none transition-colors placeholder:text-navy-900/20 focus:border-gold-400 dark:border-ivory-100/15 dark:bg-navy-800/50 dark:text-ivory-50 dark:placeholder:text-ivory-100/20"
+                placeholder="12345678"
+                className="w-full rounded-full border border-navy-900/15 bg-ivory-50/60 px-5 py-3.5 text-center font-mono text-lg tracking-[0.2em] text-navy-900 outline-none transition-colors placeholder:text-navy-900/20 focus:border-gold-400 dark:border-ivory-100/15 dark:bg-navy-800/50 dark:text-ivory-50 dark:placeholder:text-ivory-100/20"
               />
               <Button type="submit" disabled={loading} className="w-full">
                 {loading ? 'Verificando…' : 'Confirmar código'}
