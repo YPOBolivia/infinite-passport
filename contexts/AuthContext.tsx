@@ -1,40 +1,67 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { Member } from '@/lib/types';
-import { currentMember } from '@/lib/mock-data';
+import { createClient } from '@/lib/supabase/client';
+import { fetchCurrentMember } from '@/lib/supabase/queries';
 
 interface AuthContextValue {
   member: Member | null;
-  signIn: (email: string) => Promise<void>;
+  /** Sends a magic-link email. Does NOT log the person in immediately —
+   *  they're signed in once they click the link in their inbox. */
+  signIn: (email: string) => Promise<{ error?: string }>;
   signOut: () => void;
   loading: boolean;
+  /** True right after signIn() succeeds — used to show "check your email". */
+  linkSent: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-/**
- * Demo auth provider. In production, replace signIn/signOut with calls to
- * supabase.auth.signInWithOtp / supabase.auth.signOut (see lib/supabase/client.ts)
- * and hydrate `member` from the `members` table keyed on auth.uid().
- */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [member, setMember] = useState<Member | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [linkSent, setLinkSent] = useState(false);
 
-  async function signIn(_email: string) {
+  useEffect(() => {
+    const supabase = createClient();
+
+    fetchCurrentMember().then((m) => {
+      setMember(m);
+      setLoading(false);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange(async () => {
+      const m = await fetchCurrentMember();
+      setMember(m);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  async function signIn(email: string) {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setMember(currentMember);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
     setLoading(false);
+    if (error) return { error: error.message };
+    setLinkSent(true);
+    return {};
   }
 
-  function signOut() {
+  async function signOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
     setMember(null);
   }
 
   return (
-    <AuthContext.Provider value={{ member, signIn, signOut, loading }}>
+    <AuthContext.Provider value={{ member, signIn, signOut, loading, linkSent }}>
       {children}
     </AuthContext.Provider>
   );
