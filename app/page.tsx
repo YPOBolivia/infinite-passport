@@ -1,78 +1,59 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import Button from '@/components/ui/Button';
-import ThemeToggle from '@/components/ui/ThemeToggle';
-import Logo from '@/components/ui/Logo';
+import Navbar from '@/components/layout/Navbar';
+import StampGrid from '@/components/passport/StampGrid';
 import { useAuth } from '@/contexts/AuthContext';
+import { fetchMemberStamps, computeJourneyStats } from '@/lib/supabase/queries';
+import { StampInstance } from '@/lib/types';
+import { downloadPassportPdf } from '@/lib/pdf';
 
-/**
- * Production auth: replace handleSignIn with
- * supabase.auth.signInWithOtp({ email }) and route to /auth/callback,
- * which exchanges the magic-link code for a session before redirecting
- * to /dashboard. See lib/supabase/client.ts.
- */
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const { signIn, loading } = useAuth();
+export default function PassportPage() {
+  const { member, loading: authLoading } = useAuth();
   const router = useRouter();
+  const [stamps, setStamps] = useState<StampInstance[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
 
-  async function handleSignIn(e: React.FormEvent) {
-    e.preventDefault();
-    await signIn(email);
-    router.push('/dashboard');
+  useEffect(() => {
+    if (!authLoading && !member) {
+      router.push('/');
+      return;
+    }
+    if (member) {
+      fetchMemberStamps(member.id).then((s) => {
+        setStamps(s);
+        setDataLoading(false);
+      });
+    }
+  }, [member, authLoading, router]);
+
+  if (authLoading || !member || dataLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-ivory-200 dark:bg-navy-950">
+        <p className="font-mono text-xs uppercase tracking-widest2 text-navy-900/40 dark:text-ivory-100/40">
+          Cargando…
+        </p>
+      </div>
+    );
   }
 
+  const stats = computeJourneyStats(stamps);
+
   return (
-    <main className="paper-texture relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-ivory-200 px-6 dark:bg-navy-950">
-      <div className="absolute right-5 top-5">
-        <ThemeToggle />
-      </div>
+    <div className="min-h-screen bg-ivory-200 dark:bg-navy-950">
+      <Navbar onDownload={() => downloadPassportPdf(member, stats)} />
 
-      {/* ambient gold glow */}
-      <div className="pointer-events-none absolute left-1/2 top-1/3 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-400/10 blur-[120px]" />
+      <main className="mx-auto max-w-4xl px-5 py-10 sm:px-8">
+        <div className="mb-10 text-center">
+          <p className="eyebrow">The full collection</p>
+          <h1 className="mt-2 font-display text-3xl italic text-navy-900 dark:text-ivory-50">
+            {stats.totalExperiences} stamps, one journey
+          </h1>
+        </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 flex w-full max-w-sm flex-col items-center text-center"
-      >
-        <Logo orientation="vertical" height={72} />
-
-        <h1 className="mt-7 font-display text-5xl italic leading-[1.05] text-navy-900 dark:text-ivory-50">
-          Your journey,
-          <br />
-          stamped.
-        </h1>
-
-        <p className="mt-5 max-w-xs text-sm leading-relaxed text-navy-900/60 dark:text-ivory-100/60">
-          A private passport for every experience worth remembering — not another
-          attendance sheet.
-        </p>
-
-        <form onSubmit={handleSignIn} className="mt-10 w-full space-y-3">
-          <input
-            required
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@ypobolivia.org"
-            className="w-full rounded-full border border-navy-900/15 bg-ivory-50/60 px-5 py-3.5 text-center text-sm text-navy-900 outline-none transition-colors placeholder:text-navy-900/30 focus:border-gold-400 dark:border-ivory-100/15 dark:bg-navy-800/50 dark:text-ivory-50 dark:placeholder:text-ivory-100/25"
-          />
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Sending your link…' : 'Enter your passport'}
-            {!loading && <ArrowRight size={15} />}
-          </Button>
-        </form>
-
-        <p className="mt-6 font-mono text-[10px] uppercase tracking-widest2 text-navy-900/30 dark:text-ivory-100/25">
-          Secure, passwordless access · Members only
-        </p>
-      </motion.div>
-    </main>
+        <StampGrid stamps={stamps} />
+      </main>
+    </div>
   );
 }
