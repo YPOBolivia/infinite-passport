@@ -26,14 +26,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const supabase = createClient();
 
-    fetchCurrentMember().then((m) => {
-      setMember(m);
-      setLoading(false);
-    });
+    fetchCurrentMember()
+      .then((m) => {
+        setMember(m);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Infinite Passport: failed to load member', err);
+        setMember(null);
+        setLoading(false);
+      });
 
     const { data: listener } = supabase.auth.onAuthStateChange(async () => {
-      const m = await fetchCurrentMember();
-      setMember(m);
+      try {
+        const m = await fetchCurrentMember();
+        setMember(m);
+      } catch (err) {
+        console.error('Infinite Passport: failed to load member on auth change', err);
+        setMember(null);
+      }
     });
 
     return () => listener.subscription.unsubscribe();
