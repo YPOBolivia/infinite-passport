@@ -7,13 +7,12 @@ import { fetchCurrentMember } from '@/lib/supabase/queries';
 
 interface AuthContextValue {
   member: Member | null;
-  /** Sends a magic-link email. Does NOT log the person in immediately —
-   *  they're signed in once they click the link in their inbox. */
-  signIn: (email: string) => Promise<{ error?: string }>;
+  /** Sends a 6-digit code to the given email. */
+  requestCode: (email: string) => Promise<{ error?: string }>;
+  /** Verifies the 6-digit code the person typed in and signs them in. */
+  verifyCode: (email: string, code: string) => Promise<{ error?: string }>;
   signOut: () => void;
   loading: boolean;
-  /** True right after signIn() succeeds — used to show "check your email". */
-  linkSent: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -21,7 +20,6 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [member, setMember] = useState<Member | null>(null);
   const [loading, setLoading] = useState(true);
-  const [linkSent, setLinkSent] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -50,18 +48,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  async function signIn(email: string) {
-    setLoading(true);
+  async function requestCode(email: string) {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { shouldCreateUser: true },
+    });
+    if (error) return { error: error.message };
+    return {};
+  }
+
+  async function verifyCode(email: string, code: string) {
+    setLoading(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: 'email',
     });
     setLoading(false);
     if (error) return { error: error.message };
-    setLinkSent(true);
     return {};
   }
 
@@ -72,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ member, signIn, signOut, loading, linkSent }}>
+    <AuthContext.Provider value={{ member, requestCode, verifyCode, signOut, loading }}>
       {children}
     </AuthContext.Provider>
   );
