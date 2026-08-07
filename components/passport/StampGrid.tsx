@@ -6,6 +6,7 @@ import { STAMP_DEFINITIONS } from '@/lib/stamps';
 import { STAMP_CATEGORIES } from '@/lib/types';
 import Stamp from './Stamp';
 import StampModal from './StampModal';
+import { useContent } from '@/contexts/ContentContext';
 
 interface StampGridProps {
   stamps: StampInstance[];
@@ -14,6 +15,7 @@ interface StampGridProps {
 export default function StampGrid({ stamps }: StampGridProps) {
   const [selected, setSelected] = useState<StampDefinition | null>(null);
   const earnedIds = new Set(stamps.map((s) => s.definitionId));
+  const { get } = useContent();
 
   const selectedInstance = selected ? stamps.find((s) => s.definitionId === selected.id) : undefined;
 
@@ -27,8 +29,8 @@ export default function StampGrid({ stamps }: StampGridProps) {
           <section key={cat.id}>
             <div className="mb-5 flex items-baseline justify-between">
               <div>
-                <h3 className="font-display text-xl italic text-navy-900 dark:text-ivory-50">{cat.label}</h3>
-                <p className="text-xs text-navy-900/50 dark:text-ivory-100/50">{cat.blurb}</p>
+                <h3 className="font-display text-xl italic text-navy-900 dark:text-ivory-50">{get(`${cat.id}_label`)}</h3>
+                <p className="text-xs text-navy-900/50 dark:text-ivory-100/50">{get(`${cat.id}_blurb`)}</p>
               </div>
               <span className="font-mono text-xs text-navy-900/40 dark:text-ivory-100/40">
                 {earnedCount}/{defs.length}

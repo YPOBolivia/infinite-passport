@@ -1,8 +1,13 @@
+'use client';
+
 import { JourneyStats, STAMP_CATEGORIES } from '@/lib/types';
 import ProgressRing from '@/components/ui/ProgressRing';
 import Card from '@/components/ui/Card';
+import { useContent } from '@/contexts/ContentContext';
 
 export default function JourneyProgress({ stats }: { stats: JourneyStats }) {
+  const { get } = useContent();
+
   return (
     <Card className="p-6 sm:p-8">
       <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start">
@@ -21,7 +26,7 @@ export default function JourneyProgress({ stats }: { stats: JourneyStats }) {
             const pct = cs.total ? Math.round((cs.earned / cs.total) * 100) : 0;
             return (
               <div key={cat.id} className="flex items-center gap-3">
-                <span className="w-24 shrink-0 text-xs text-navy-900/60 dark:text-ivory-100/60">{cat.label}</span>
+                <span className="w-24 shrink-0 text-xs text-navy-900/60 dark:text-ivory-100/60">{get(`${cat.id}_label`)}</span>
                 <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-navy-900/8 dark:bg-ivory-100/8">
                   <div
                     className="h-full rounded-full bg-gold-400 transition-all duration-700"
