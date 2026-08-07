@@ -15,12 +15,12 @@ interface StampProps {
 
 const INK_CLASS: Record<string, string> = {
   learning: 'text-ink-learning',
-  connection: 'text-ink-connection',
-  wellness: 'text-ink-wellness',
-  leadership: 'text-ink-leadership',
-  community: 'text-ink-community',
+  network: 'text-ink-network',
+  forum: 'text-ink-forum',
   family: 'text-ink-family',
+  regional: 'text-ink-regional',
   global: 'text-ink-global',
+  governance: 'text-ink-governance',
   special: 'text-ink-special',
 };
 
