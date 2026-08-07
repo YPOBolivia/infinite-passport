@@ -76,7 +76,7 @@ export async function fetchUpcomingEvents(): Promise<Event[]> {
 
 /** Same completion-percentage math as the demo version, just fed with real stamps. */
 export function computeJourneyStats(stamps: StampInstance[]): JourneyStats {
-  const categories: StampCategory[] = ['learning', 'connection', 'wellness', 'leadership', 'community', 'family', 'global', 'special'];
+  const categories: StampCategory[] = ['learning', 'network', 'forum', 'family', 'regional', 'global', 'governance', 'special'];
   const byCategory = {} as JourneyStats['byCategory'];
 
   for (const cat of categories) {
