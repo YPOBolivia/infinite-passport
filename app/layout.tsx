@@ -3,6 +3,7 @@ import { Fraunces, Inter, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ContentProvider } from '@/contexts/ContentContext';
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -49,7 +50,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${fraunces.variable} ${inter.variable} ${plexMono.variable} font-body`}>
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <ContentProvider>{children}</ContentProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

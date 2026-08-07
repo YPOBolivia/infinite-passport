@@ -8,6 +8,7 @@ import Button from '@/components/ui/Button';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Logo from '@/components/ui/Logo';
 import { useAuth } from '@/contexts/AuthContext';
+import { useContent } from '@/contexts/ContentContext';
 
 export default function LoginPage() {
   const [step, setStep] = useState<'email' | 'code'>('email');
@@ -16,6 +17,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const { requestCode, verifyCode, loading, member } = useAuth();
+  const { get } = useContent();
   const router = useRouter();
 
   useEffect(() => {
@@ -59,14 +61,11 @@ export default function LoginPage() {
         <Logo orientation="vertical" height={72} />
 
         <h1 className="mt-7 font-display text-5xl italic leading-[1.05] text-navy-900 dark:text-ivory-50">
-          Your journey,
-          <br />
-          stamped.
+          {get('hero_title')}
         </h1>
 
         <p className="mt-5 max-w-xs text-sm leading-relaxed text-navy-900/60 dark:text-ivory-100/60">
-          A private passport for every experience worth remembering — not another
-          attendance sheet.
+          {get('hero_subtitle')}
         </p>
 
         {step === 'email' && (
