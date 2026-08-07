@@ -5,12 +5,12 @@
 
 export type StampCategory =
   | 'learning'
-  | 'connection'
-  | 'wellness'
-  | 'leadership'
-  | 'community'
+  | 'network'
+  | 'forum'
   | 'family'
+  | 'regional'
   | 'global'
+  | 'governance'
   | 'special';
 
 /** A stamp DEFINITION is the reusable "die" — the artwork + rules.
@@ -91,12 +91,12 @@ export interface JourneyStats {
 }
 
 export const STAMP_CATEGORIES: { id: StampCategory; label: string; blurb: string }[] = [
-  { id: 'learning', label: 'Learning', blurb: 'Forums, education & big ideas' },
-  { id: 'connection', label: 'Connection', blurb: 'Peer moments & shared tables' },
-  { id: 'wellness', label: 'Wellness', blurb: 'Mind, body & balance' },
-  { id: 'leadership', label: 'Leadership', blurb: 'Stepping up & stepping forward' },
-  { id: 'community', label: 'Community', blurb: 'Giving back, together' },
-  { id: 'family', label: 'Family', blurb: 'The ones who travel with us' },
-  { id: 'global', label: 'Global', blurb: 'Beyond Bolivia' },
-  { id: 'special', label: 'Special', blurb: 'Once-in-a-journey moments' },
+  { id: 'learning', label: 'Learning Visa', blurb: 'Expand your mind.' },
+  { id: 'network', label: 'Network Visa', blurb: 'Build lifelong connections.' },
+  { id: 'forum', label: 'Forum Visa', blurb: 'Share what truly matters.' },
+  { id: 'family', label: 'Family Visa', blurb: 'Grow together.' },
+  { id: 'regional', label: 'Regional Visa', blurb: 'Discover your region.' },
+  { id: 'global', label: 'Global Visa', blurb: 'Experience the world.' },
+  { id: 'governance', label: 'Governance Visa', blurb: 'Lead through service.' },
+  { id: 'special', label: 'Special Collection', blurb: 'Milestones that make your journey uniquely personal.' },
 ];

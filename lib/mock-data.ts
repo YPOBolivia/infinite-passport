@@ -21,10 +21,10 @@ export const currentMember: Member = {
 };
 
 const awarded = [
-  'passport-activated', 'welcome', 'forum-attendee', 'forum-attendee', 'welcome-dinner',
-  'education-day', 'community-impact', 'family-camp', 'wellness-retreat', 'birthday',
-  'forum-retreat', 'cross-chapter', 'mentor', 'explorer', 'speaker', 'global-university',
-  'committee-lead',
+  'passport-activated', 'learning-event-01', 'learning-event-02', 'network-event-01',
+  'forum-attendance-01', 'forum-attendance-02', 'family-event-01', 'regional-event-01',
+  'birthday', 'forum-attendance-03', 'global-event-01', 'day-chair-1', 'sponsor',
+  'network-event-02', 'membership-anniversary', 'committee-member-1',
 ];
 
 export const memberStamps: StampInstance[] = awarded.map((defId, i) => ({
@@ -39,7 +39,7 @@ export const memberStamps: StampInstance[] = awarded.map((defId, i) => ({
 
 export function getJourneyStats(): JourneyStats {
   const byCategory: JourneyStats['byCategory'] = {} as JourneyStats['byCategory'];
-  const categories: StampCategory[] = ['learning', 'connection', 'wellness', 'leadership', 'community', 'family', 'global', 'special'];
+  const categories: StampCategory[] = ['learning', 'network', 'forum', 'family', 'regional', 'global', 'governance', 'special'];
 
   for (const cat of categories) {
     const total = STAMP_DEFINITIONS.filter((d) => d.category === cat && !d.secret).length;
@@ -62,9 +62,9 @@ export function getJourneyStats(): JourneyStats {
 }
 
 export const upcomingEvents: Event[] = [
-  { id: 'evt_1', title: 'Forum Retreat — Lake Titicaca', category: 'connection', city: 'Copacabana', country: 'Bolivia', date: '2026-09-12', attendeeCount: 24 },
+  { id: 'evt_1', title: 'Forum Retreat — Lake Titicaca', category: 'forum', city: 'Copacabana', country: 'Bolivia', date: '2026-09-12', attendeeCount: 24 },
   { id: 'evt_2', title: 'Education Day: AI & Family Business', category: 'learning', city: 'Santa Cruz', country: 'Bolivia', date: '2026-09-28', attendeeCount: 60 },
-  { id: 'evt_3', title: 'Wellness Morning — Valle de la Luna', category: 'wellness', city: 'La Paz', country: 'Bolivia', date: '2026-10-04', attendeeCount: 18 },
+  { id: 'evt_3', title: 'Regional Meetup — Valle de la Luna', category: 'regional', city: 'La Paz', country: 'Bolivia', date: '2026-10-04', attendeeCount: 18 },
   { id: 'evt_4', title: 'YPO Edge Global Conference', category: 'global', city: 'Barcelona', country: 'Spain', date: '2026-11-02', attendeeCount: 3200 },
 ];
 
