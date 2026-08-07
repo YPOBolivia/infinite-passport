@@ -14,7 +14,10 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function formatDate(iso: string): string {
   const datePart = iso.slice(0, 10); // "YYYY-MM-DD"
-  const [y, m, d] = datePart.split('-').map(Number);
+  const parts = datePart.split('-').map(Number);
+  const y = parts[0] ?? 1970;
+  const m = parts[1] ?? 1;
+  const d = parts[2] ?? 1;
   const date = new Date(Date.UTC(y, m - 1, d));
   return date.toLocaleDateString('en-US', {
     day: '2-digit',
