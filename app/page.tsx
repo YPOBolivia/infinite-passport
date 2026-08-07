@@ -94,7 +94,7 @@ export default function LoginPage() {
               <MailCheck size={22} className="text-gold-500" />
               <p className="font-display text-lg italic text-navy-900 dark:text-ivory-50">Revisa tu correo</p>
               <p className="max-w-xs text-sm text-navy-900/60 dark:text-ivory-100/60">
-                Te enviamos un código de 6 dígitos a <strong>{email}</strong>. Escríbelo abajo.
+                Te enviamos un código de acceso a <strong>{email}</strong>. Escríbelo abajo.
               </p>
             </div>
 
