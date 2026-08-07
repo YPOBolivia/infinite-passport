@@ -4,11 +4,23 @@ export function cn(...inputs: ClassValue[]) {
   return clsx(inputs);
 }
 
+/**
+ * Formats a date for display as a plain calendar date — "01 Jul 2026" —
+ * regardless of the viewer's timezone. Stamps are awarded "on a date",
+ * not at an exact moment, so we deliberately ignore the time/timezone
+ * portion of the stored value instead of letting the browser convert
+ * it to local time (which can shift the date shown by a day for
+ * anyone west of UTC, like Bolivia).
+ */
 export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
+  const datePart = iso.slice(0, 10); // "YYYY-MM-DD"
+  const [y, m, d] = datePart.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return date.toLocaleDateString('en-US', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
+    timeZone: 'UTC',
   });
 }
 
