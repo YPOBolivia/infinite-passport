@@ -24,18 +24,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing email or stampName' }, { status: 400 });
   }
 
+  // Work out overall completion % so far, so the email feels alive
+  // and pulls people back in — not just "you got one thing".
   let completionPct = 0;
   let totalEarned = 0;
   const totalPossible = STAMP_DEFINITIONS.filter((d) => !d.secret).length;
 
   if (memberId && process.env.SUPABASE_SERVICE_ROLE_KEY) {
     const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY);
-    const { count } = await admin
+    const { count, error: countError } = await admin
       .from('stamp_instances')
       .select('*', { count: 'exact', head: true })
       .eq('member_id', memberId);
+    if (countError) {
+      console.error('notify-stamp: failed to count stamps for', memberId, countError.message);
+    }
     totalEarned = count ?? 0;
     completionPct = totalPossible ? Math.round((totalEarned / totalPossible) * 100) : 0;
+  } else {
+    console.error('notify-stamp: skipped completion calculation — memberId or SUPABASE_SERVICE_ROLE_KEY missing', {
+      hasMemberId: Boolean(memberId),
+      hasServiceRoleKey: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    });
   }
 
   const transporter = nodemailer.createTransport({
@@ -71,8 +81,8 @@ export async function POST(request: NextRequest) {
           ${stampDescription ? `<p style="font-family: Arial, sans-serif; font-size:14px; line-height:1.6; color:rgba(247,243,233,0.75); margin:0 0 28px;">${stampDescription}</p>` : ''}
 
           <table role="presentation" width="100%" style="margin-bottom:8px;"><tr>
-            <td style="font-family: Arial, sans-serif; font-size:11px; color:rgba(247,243,233,0.5);">Tu journey</td>
-            <td style="font-family: Arial, sans-serif; font-size:11px; color:#C9A961; text-align:right;">${completionPct}% completo</td>
+            <td style="font-family: Arial, sans-serif; font-size:11px; color:rgba(247,243,233,0.5);">Your journey</td>
+            <td style="font-family: Arial, sans-serif; font-size:11px; color:#C9A961; text-align:right;">${completionPct}% complete</td>
           </tr></table>
           <table role="presentation" width="100%" style="height:6px; background:rgba(247,243,233,0.12); border-radius:99px; overflow:hidden;"><tr>
             <td width="${completionPct}%" style="background:#C9A961; height:6px;"></td>
