@@ -78,7 +78,7 @@ export const STAMP_DEFINITIONS: StampDefinition[] = [
   { id: 'passport-activated', name: 'Passport Activated', category: 'special', icon: 'key', description: 'Awarded the first time a member signs in to Infinite Passport.' },
   { id: 'birthday', name: 'Birthday', category: 'special', icon: 'cake', description: "Automatically awarded on the member's birthday each fiscal year." },
   { id: 'membership-anniversary', name: 'Membership Anniversary', category: 'special', icon: 'infinity', description: "Awarded annually on the member's YPO anniversary." },
-  { id: 'secret', name: '???', category: 'special', icon: 'mask', description: 'A hidden collectible unlocked through a special milestone determined by the chapter.', secret: true, rare: true },
+  { id: 'secret', name: 'Chapter Founder', category: 'special', icon: 'mask', description: 'Awarded to founding members of YPO Bolivia who remain active in the chapter.', secret: true, rare: true },
 ];
 
 export const getStampDefinition = (id: string): StampDefinition | undefined =>
