@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { email, fullName, memberId, stampName, stampDescription, stampCategory } = await request.json();
+  const { email, fullName, memberId, stampName, stampDescription, stampCategory, eventNote } = await request.json();
 
   if (!email || !stampName) {
     return NextResponse.json({ error: 'Missing email or stampName' }, { status: 400 });
@@ -62,6 +62,12 @@ export async function POST(request: NextRequest) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://infinite-passport.vercel.app';
   const categoryLabel = stampCategory ? String(stampCategory).charAt(0).toUpperCase() + String(stampCategory).slice(1) + ' Visa' : '';
 
+  // If this stamp was tied to a real, named event (e.g. "Fishing Retreat
+  // 2026 | First Cast"), lead with that instead of the generic catalog
+  // slot name ("Network Event 01") — it reads far more personal.
+  const headline = eventNote && String(eventNote).trim() ? String(eventNote).trim() : stampName;
+  const showGenericDescription = !eventNote && stampDescription;
+
   const html = `
   <div style="background:#F7F3E9; padding:40px 16px; font-family: Georgia, 'Times New Roman', serif;">
     <table role="presentation" width="100%" style="max-width:480px; margin:0 auto; background:#041E42; border-radius:20px; overflow:hidden;" cellpadding="0" cellspacing="0">
@@ -75,10 +81,10 @@ export async function POST(request: NextRequest) {
           </div>
 
           <p style="font-family: Arial, sans-serif; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:rgba(247,243,233,0.5); margin:0 0 4px;">¡Felicidades${firstName ? `, ${firstName}` : ''}!</p>
-          <h1 style="font-style:italic; font-weight:400; font-size:26px; color:#F7F3E9; margin:0 0 4px;">${stampName}</h1>
+          <h1 style="font-style:italic; font-weight:400; font-size:26px; color:#F7F3E9; margin:0 0 4px;">${headline}</h1>
           ${categoryLabel ? `<p style="font-family: Arial, sans-serif; font-size:11px; letter-spacing:1px; color:#C9A961; margin:0 0 20px;">${categoryLabel}</p>` : ''}
 
-          ${stampDescription ? `<p style="font-family: Arial, sans-serif; font-size:14px; line-height:1.6; color:rgba(247,243,233,0.75); margin:0 0 28px;">${stampDescription}</p>` : ''}
+          ${showGenericDescription ? `<p style="font-family: Arial, sans-serif; font-size:14px; line-height:1.6; color:rgba(247,243,233,0.75); margin:0 0 28px;">${stampDescription}</p>` : '<div style="margin-bottom:20px;"></div>'}
 
           <table role="presentation" width="100%" style="margin-bottom:8px;"><tr>
             <td style="font-family: Arial, sans-serif; font-size:11px; color:rgba(247,243,233,0.5);">Your journey</td>
@@ -100,7 +106,7 @@ export async function POST(request: NextRequest) {
     await transporter.sendMail({
       from: `"Infinite Passport" <${process.env.SMTP_USER}>`,
       to: email,
-      subject: `🎉 Nuevo sello: ${stampName}`,
+      subject: `🎉 Nuevo sello: ${headline}`,
       html,
     });
     return NextResponse.json({ ok: true });
