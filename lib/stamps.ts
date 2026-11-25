@@ -34,6 +34,7 @@ export const STAMP_DEFINITIONS: StampDefinition[] = [
   { id: 'network-event-03', name: 'Network Event 03', category: 'network', icon: 'handshake', description: 'Awarded for a qualifying networking experience designated by the chapter.' },
   { id: 'network-event-04', name: 'Network Event 04', category: 'network', icon: 'handshake', description: 'Awarded for a qualifying networking experience designated by the chapter.' },
   { id: 'network-event-05', name: 'Network Event 05', category: 'network', icon: 'handshake', description: 'Awarded for a qualifying networking experience designated by the chapter.' },
+  { id: 'network-event-06', name: 'Network Event 06', category: 'network', icon: 'handshake', description: 'Awarded for a qualifying networking experience designated by the chapter.' },
 
   // FORUM VISA — 10 attendance slots + Forum Moderator
   { id: 'forum-attendance-01', name: 'Forum Attendance 01', category: 'forum', icon: 'wax-seal', description: 'Awarded for a qualifying Forum experience.' },
