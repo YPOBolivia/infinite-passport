@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, type MotionStyle } from 'framer-motion';
 import { StampDefinition } from '@/lib/types';
 import { stampRotation, cn } from '@/lib/utils';
 import StampIcon from './StampIcon';
@@ -37,7 +37,7 @@ export default function Stamp({ definition, earned, onClick, size = 'md', animat
       onClick={onClick}
       type="button"
       aria-label={isHidden ? 'Secret stamp — not yet unlocked' : `${definition.name} stamp`}
-      style={{ '--stamp-rot': `${rotation}deg`, width: px, height: px } as React.CSSProperties}
+      style={{ '--stamp-rot': `${rotation}deg`, width: px, height: px } as unknown as MotionStyle}
       className={cn(
         'group relative shrink-0 rounded-full transition-transform duration-300',
         earned ? 'cursor-pointer hover:scale-105' : 'cursor-default',
